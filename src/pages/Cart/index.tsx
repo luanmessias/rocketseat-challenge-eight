@@ -36,7 +36,7 @@ interface Product {
 }
 
 const Cart: React.FC = () => {
-  const { increment, decrement, products } = useCart();
+  const { increment, decrement, removeFromCart, products } = useCart();
 
   function handleIncrement(id: string): void {
     increment(id);
@@ -44,6 +44,14 @@ const Cart: React.FC = () => {
 
   function handleDecrement(id: string): void {
     decrement(id);
+  }
+
+  function handleRemove(id: string): void {
+    removeFromCart(id);
+  }
+
+  function handleClear(): void {
+    clearCart();
   }
 
   const cartTotal = useMemo(() => {
@@ -73,6 +81,7 @@ const Cart: React.FC = () => {
           data={products}
           keyExtractor={item => item.id}
           ListFooterComponent={<View />}
+          decrement
           ListFooterComponentStyle={{
             height: 80,
           }}
@@ -102,12 +111,19 @@ const Cart: React.FC = () => {
                 >
                   <FeatherIcon name="plus" color="#E83F5B" size={16} />
                 </ActionButton>
-                <ActionButton
-                  testID={`decrement-${item.id}`}
-                  onPress={() => handleDecrement(item.id)}
-                >
-                  <FeatherIcon name="minus" color="#E83F5B" size={16} />
-                </ActionButton>
+                {item.quantity > 1 && (
+                  <ActionButton
+                    testID={`decrement-${item.id}`}
+                    onPress={() => handleDecrement(item.id)}
+                  >
+                    <FeatherIcon name="minus" color="#E83F5B" size={16} />
+                  </ActionButton>
+                )}
+                {item.quantity === 1 && (
+                  <ActionButton onPress={() => handleRemove(item.id)}>
+                    <FeatherIcon name="trash-2" color="#E83F5B" size={16} />
+                  </ActionButton>
+                )}
               </ActionContainer>
             </Product>
           )}
